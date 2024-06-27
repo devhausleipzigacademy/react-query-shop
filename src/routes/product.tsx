@@ -1,19 +1,3 @@
-/*
-  This example requires some changes to your config:
-
-  ```
-  // tailwind.config.js
-  module.exports = {
-    // ...
-    plugins: [
-      // ...
-      require('@tailwindcss/typography'),
-    ],
-  }
-  ```
-*/
-import { useEffect, useState } from "react";
-
 import { type Product } from "../utils/types";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -22,6 +6,7 @@ import { SizePicker } from "../components/size-picker";
 import { classNames } from "../utils/stying";
 import { ColorPicker } from "../components/color-picker";
 import { Reviews } from "../components/reviews";
+import { useQuery } from "@tanstack/react-query";
 
 const details = [
   "Only the best materials",
@@ -31,20 +16,21 @@ const details = [
 ];
 
 export function Product() {
-  const [product, setProduct] = useState<Product | null>(null);
-
   const { id } = useParams();
 
   async function fetchProduct(id: string) {
-    const { data } = await axios.get(`http://localhost:8000/products/${id}`);
-    setProduct(data);
+    const { data } = await axios.get<Product>(
+      `http://localhost:8000/products/${id}`
+    );
+    return data;
   }
 
-  useEffect(() => {
-    if (id) {
-      fetchProduct(id);
-    }
-  }, [id]);
+  const { data: product } = useQuery({
+    queryKey: ["products", id],
+    queryFn: () => fetchProduct(id!),
+    enabled: !!id,
+    // refetchInterval: 10000,
+  });
 
   if (product) {
     return (
