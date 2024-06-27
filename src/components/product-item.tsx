@@ -11,9 +11,11 @@ type Props = {
 export function ProductItem({ product, trash = false }: Props) {
   async function deleteProduct(id: number) {
     if (trash) {
+      // Restore an item
       await axios.post("http://localhost:8000/products", product);
       await axios.delete(`http://localhost:8000/trash/${id}`);
     } else {
+      // Delete an item
       await axios.post("http://localhost:8000/trash", product);
       await axios.delete(`http://localhost:8000/products/${id}`);
     }
