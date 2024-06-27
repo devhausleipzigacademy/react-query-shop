@@ -7,6 +7,7 @@ import { Home } from "./routes/home";
 import { Product } from "./routes/product";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { Trash } from "./routes/trash";
 
 const router = createBrowserRouter([
   {
@@ -20,6 +21,10 @@ const router = createBrowserRouter([
       {
         path: "products/:id",
         element: <Product />,
+      },
+      {
+        path: "trash",
+        element: <Trash />,
       },
     ],
   },

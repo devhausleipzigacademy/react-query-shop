@@ -5,12 +5,18 @@ import axios from "axios";
 
 type Props = {
   product: Product;
+  trash?: boolean;
 };
 
-export function ProductItem({ product }: Props) {
+export function ProductItem({ product, trash = false }: Props) {
   async function deleteProduct(id: number) {
-    await axios.post("http://localhost:8000/trash", product);
-    await axios.delete(`http://localhost:8000/products/${id}`);
+    if (trash) {
+      await axios.post("http://localhost:8000/products", product);
+      await axios.delete(`http://localhost:8000/trash/${id}`);
+    } else {
+      await axios.post("http://localhost:8000/trash", product);
+      await axios.delete(`http://localhost:8000/products/${id}`);
+    }
   }
 
   const queryClient = useQueryClient();
@@ -18,7 +24,10 @@ export function ProductItem({ product }: Props) {
   const { mutate } = useMutation({
     mutationKey: ["delete", "product", product.id],
     mutationFn: () => deleteProduct(product.id),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["products"] }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["trash"] });
+    },
   });
 
   return (
@@ -40,7 +49,7 @@ export function ProductItem({ product }: Props) {
         onClick={() => mutate()}
         className="rounded-md text-white bg-red-600 py-1 px-2 mt-2 hover:bg-red-800"
       >
-        Delete Product
+        {trash ? "Restore" : "Delete"} Product
       </button>
     </div>
   );

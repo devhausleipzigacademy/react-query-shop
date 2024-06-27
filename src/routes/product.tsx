@@ -19,10 +19,27 @@ export function Product() {
   const { id } = useParams();
 
   async function fetchProduct(id: string) {
-    const { data } = await axios.get<Product>(
-      `http://localhost:8000/products/${id}`
-    );
-    return data;
+    try {
+      // We try to find a product
+      const { data: foundProduct } = await axios.get<Product>(
+        `http://localhost:8000/products/${id}`
+      );
+      // if above line succeed we return product - otherwise we jump into catch
+      return foundProduct;
+    } catch (error) {
+      // Porduct was not found
+      try {
+        // We try to find a trash item
+        const { data: foundTrashItem } = await axios.get<Product>(
+          `http://localhost:8000/trash/${id}`
+        );
+        // if above line succeed we return trash item - otherwise we jump into catch
+        return foundTrashItem;
+      } catch (error) {
+        // if we didn't find a product or trash item
+        throw new Error("Product not found");
+      }
+    }
   }
 
   const { data: product } = useQuery({
