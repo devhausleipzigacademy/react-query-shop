@@ -21,7 +21,7 @@ export function ColorPicker() {
         <RadioGroup
           value={selectedColor}
           onChange={setSelectedColor}
-          className="flex items-center space-x-3"
+          className="flex items-center gap-3"
         >
           {colors.map((color) => (
             <Radio

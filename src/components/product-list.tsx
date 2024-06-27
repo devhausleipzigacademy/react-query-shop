@@ -54,16 +54,10 @@ import axios from "axios";
 // ]
 
 export function ProductList() {
-  const [products, setProducts] = useState<Product[]>([]);
-
   async function fetchProducts() {
-    const { data } = await axios.get("http://localhost:8000/products");
-    setProducts(data);
+    const result = await axios.get("http://localhost:8000/products");
+    return result.data;
   }
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   return (
     <div className="bg-white">
